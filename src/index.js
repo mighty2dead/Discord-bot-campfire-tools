@@ -1,12 +1,17 @@
 require('dotenv').config(); // Load environment variables
-const { Client, IntentsBitField, messageLink, ActivityType } = require('discord.js'); // Import the Client and IntentsBitField classes from discord.js
+const { Client, IntentsBitField, ActivityType, PermissionsBitField } = require('discord.js'); // Import the necessary classes from discord.js
+const fs = require('fs'); // Import the file system module
 const client = new Client({ // Create a new instance of the Client class
     intents: [
         IntentsBitField.Flags.Guilds,
         IntentsBitField.Flags.GuildMessages, // Add the GUILD_MESSAGES intent
         IntentsBitField.Flags.MessageContent,  // Add the MESSAGE_CONTENT intent
-    ],
+]
 });
+
+const logChannelId = 'YOUR_LOG_CHANNEL_ID'; // Replace with your log channel ID
+let lastBannedMemberId = null; // Store the last banned member's ID ],
+
 
 client.on("ready", (c) => { // Listen for the ready event
     console.log(`🟢 Logged in as ${client.user.tag}`); // Log the bot's tag
@@ -17,8 +22,17 @@ client.on("ready", (c) => { // Listen for the ready event
     })
 });
 
-client.on("messageCreate", (message) => { // Listen for the messageCreate event
-    if (message.author.bot) { // Check if the message author is a bot
+client.on("messageCreate", async (message) => { // Listen for the messageCreate event
+    const logMessage = (log) => {
+        const logChannel = client.channels.cache.get(logChannelId);
+        if (logChannel) {
+            logChannel.send(log);
+        }
+        fs.appendFileSync('command_logs.txt', log + '\n');
+    };
+    
+    
+    if (message.content === ".ping") { // Check if the message content is ".ping"
         return; // If the author is a bot, return
     }
     
@@ -39,12 +53,21 @@ client.on("messageCreate", (message) => { // Listen for the messageCreate event
     }
 
     if (message.content.startsWith(".ban")) {
-        if (!message.member.permissions.has('BAN_MEMBERS')) {
-            message.reply("You do not have permission to ban members.");
+        if (!message.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+        const args = message.content.split(' ');
+        const member = message.mentions.members.first();
+        const duration = args[2] ? parseInt(args[2], 10) * 1000 : null; // Duration in seconds ban members.");
             console.log("🔴 Ban command attempted without permission by user", message.author.tag);
             return;
         }
 
+        /**
+         * Retrieves the first mentioned member in a Discord message.
+         * 
+         * @constant {GuildMember} member - The first mentioned member in the message.
+         * @param {Message} message - The Discord message object.
+         * @returns {GuildMember | undefined} The first mentioned member, or undefined if no members are mentioned.
+         */
         const member = message.mentions.members.first();
         if (!member) {
             message.reply("Please mention a valid member to ban.");
@@ -52,15 +75,20 @@ client.on("messageCreate", (message) => { // Listen for the messageCreate event
             return;
         }
 
-        member.ban()
-            .then(() => {
-                message.reply(`${member.user.tag} has been banned.`);
-                console.log("🟢 Executed command .ban on user", member.user.tag, "by", message.author.tag);
-            })
-            .catch(err => {
-                message.reply("I was unable to ban the member.");
-                console.error("🔴 Error banning user", member.user.tag, "by", message.author.tag, "Error:", err);
-            });
+        if (!member.bannable) {
+            message.reply("I cannot ban this member.");
+            console.log("🔴 Ban command attempted on a non-bannable user by", message.author.tag);
+            return;
+        }
+
+        try {
+            await member.ban();
+            message.reply(`${member.user.tag} has been banned.`);
+            console.log("🟢 Executed command .ban on user", member.user.tag, "by", message.author.tag);
+        } catch (err) {
+            message.reply("I was unable to ban the member.");
+            console.error("🔴 Error banning user", member.user.tag, "by", message.author.tag, "Error:", err);
+        }
     }
 });
 
@@ -77,3 +105,5 @@ client.on("interactionCreate", (interaction) => { // Listen for the interactionC
 });
 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
+
+//ok
