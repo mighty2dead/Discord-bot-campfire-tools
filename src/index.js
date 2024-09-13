@@ -37,6 +37,8 @@ client.on("messageCreate", (message) => { // Listen for the messageCreate event
         console.log("🟢 Executed command .hey")
         console.log("🔵 By user", message.author.tag)
     }
+
+    // my ass
 });
 
 client.on("interactionCreate", (interaction) => { // Listen for the interactionCreate event
