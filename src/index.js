@@ -90,6 +90,42 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
             console.error("🔴 Error banning user", member.user.tag, "by", message.author.tag, "Error:", err);
         }
     }
+
+    if (message.content.startsWith(".unban")) {
+        if (!message.member.permissions.has(PermissionsBitField.Flags.BanMembers)) {
+            console.log("🔴 Unban command attempted without permission by user", message.author.tag);
+            return;
+        }
+
+        const args = message.content.split(' ');
+        const userId = args[1];
+        if (!userId) {
+            message.reply("Please provide a user ID to unban.");
+            console.log("🔴 Unban command attempted without providing a user ID by", message.author.tag);
+            return;
+        }
+
+        // Validate the user ID format
+        if (!/^\d+$/.test(userId)) {
+            message.reply("Invalid user ID format.");
+            console.log("🔴 Unban command attempted with invalid user ID format by", message.author.tag);
+            return;
+        }
+
+        try {
+            await message.guild.bans.remove(userId);
+            message.reply(`User with ID ${userId} has been unbanned.`);
+            console.log("🟢 Executed command .unban on user with ID", userId, "by", message.author.tag);
+        } catch (err) {
+            if (err.code === 10026) { // Unknown Ban error code
+                message.reply("This user is not banned.");
+                console.log("🔴 Unban command attempted on a user who is not banned by", message.author.tag);
+            } else {
+                message.reply("I was unable to unban the user.");
+                console.error("🔴 Error unbanning user with ID", userId, "by", message.author.tag, "Error:", err);
+            }
+        }
+    }
 });
 
 client.on("interactionCreate", (interaction) => { // Listen for the interactionCreate event
@@ -106,4 +142,11 @@ client.on("interactionCreate", (interaction) => { // Listen for the interactionC
 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
 
-//ok
+// THIS IS A MESAGE TO MYSELF
+// IN HOWEVER FUCKING WAY THAT THIS CODE WORKS I AM DEEPLY IMPRESSED BECAUSE IM RETARDED AND I KNOW IT
+// ONCE AGAIN I HAVE NO LIFE NO WIFE NO FUTURE
+// ALL I KNOW IS HOW TO STARE AT A FUCKING MONITOR AND MAKE THIS SHITHOLE
+// THIS CAN GO 2 WAYS
+// I BECOME A DRUGGIE
+// I BECOME ELON MUSK
+
