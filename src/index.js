@@ -38,7 +38,30 @@ client.on("messageCreate", (message) => { // Listen for the messageCreate event
         console.log("🔵 By user", message.author.tag)
     }
 
-    // my ass
+    if (message.content.startsWith(".ban")) {
+        if (!message.member.permissions.has('BAN_MEMBERS')) {
+            message.reply("You do not have permission to ban members.");
+            console.log("🔴 Ban command attempted without permission by user", message.author.tag);
+            return;
+        }
+
+        const member = message.mentions.members.first();
+        if (!member) {
+            message.reply("Please mention a valid member to ban.");
+            console.log("🔴 Ban command attempted without mentioning a user by", message.author.tag);
+            return;
+        }
+
+        member.ban()
+            .then(() => {
+                message.reply(`${member.user.tag} has been banned.`);
+                console.log("🟢 Executed command .ban on user", member.user.tag, "by", message.author.tag);
+            })
+            .catch(err => {
+                message.reply("I was unable to ban the member.");
+                console.error("🔴 Error banning user", member.user.tag, "by", message.author.tag, "Error:", err);
+            });
+    }
 });
 
 client.on("interactionCreate", (interaction) => { // Listen for the interactionCreate event
