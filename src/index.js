@@ -142,11 +142,4 @@ client.on("interactionCreate", (interaction) => { // Listen for the interactionC
 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
 
-// THIS IS A MESAGE TO MYSELF
-// IN HOWEVER FUCKING WAY THAT THIS CODE WORKS I AM DEEPLY IMPRESSED BECAUSE IM RETARDED AND I KNOW IT
-// ONCE AGAIN I HAVE NO LIFE NO WIFE NO FUTURE
-// ALL I KNOW IS HOW TO STARE AT A FUCKING MONITOR AND MAKE THIS SHITHOLE
-// THIS CAN GO 2 WAYS
-// I BECOME A DRUGGIE
-// I BECOME ELON MUSK
-
+//ok
