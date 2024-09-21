@@ -187,112 +187,157 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
 
     if (message.content.startsWith(".warn")) { // Check if the message content starts with ".warn"
         if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) { // Check if the member has the ManageMessages permission
-            message.reply("You do not have permission to warn members."); // Reply with a permission error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("You do not have permission to warn members."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Warn command attempted without permission by user", message.author.tag); // Log the permission error
             return; // Exit the command
         }
-
+    
         const member = message.mentions.members.first(); // Get the first mentioned member
         if (!member) { // Check if a valid member was mentioned
-            message.reply("Please mention a valid member to warn."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Please mention a valid member to warn."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Warn command attempted without mentioning a user by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         const reason = message.content.split(' ').slice(2).join(' ') || 'No reason provided'; // Get the reason from the message content or use a default reason
         const warnEntry = `${member.id},${member.user.tag},${reason}\n`; // Create a warning entry
         fs.appendFileSync(warnsFile, warnEntry); // Append the warning entry to the warns file
-        message.reply(`${member.user.tag} has been warned. Reason: ${reason}`); // Reply with a success message
+        const embed = new EmbedBuilder() // Create a new embed
+            .setColor(0xffd5f6) // Set the embed color to pink
+            .setDescription(`${member.user.tag} has been warned. Reason: ${reason}`); // Set the embed description
+        message.reply({ embeds: [embed] }); // Reply with the embed
         console.log("🟢 Executed command .warn on user", member.user.tag, "by", message.author.tag); // Log the command execution
     }
-
+    
     if (message.content.startsWith(".unwarn")) { // Check if the message content starts with ".unwarn"
         if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) { // Check if the member has the ManageMessages permission
-            message.reply("You do not have permission to unwarn members."); // Reply with a permission error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("You do not have permission to unwarn members."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Unwarn command attempted without permission by user", message.author.tag); // Log the permission error
             return; // Exit the command
         }
-
+    
         const member = message.mentions.members.first(); // Get the first mentioned member
         if (!member) { // Check if a valid member was mentioned
-            message.reply("Please mention a valid member to unwarn."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Please mention a valid member to unwarn."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Unwarn command attempted without mentioning a user by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         const warns = fs.readFileSync(warnsFile, 'utf-8').split('\n').filter(Boolean); // Read the warns file and split it into lines, filtering out empty lines
         const updatedWarns = warns.filter(warn => !warn.startsWith(`${member.id},`)); // Filter out the warnings for the specified member
         fs.writeFileSync(warnsFile, updatedWarns.join('\n') + '\n'); // Write the updated warns list back to the file
-        message.reply(`${member.user.tag} has been unwarned.`); // Reply with a success message
+        const embed = new EmbedBuilder() // Create a new embed
+            .setColor(0xffd5f6) // Set the embed color to pink
+            .setDescription(`${member.user.tag} has been unwarned.`); // Set the embed description
+        message.reply({ embeds: [embed] }); // Reply with the embed
         console.log("🟢 Executed command .unwarn on user", member.user.tag, "by", message.author.tag); // Log the command execution
     }
-
+    
     if (message.content.startsWith(".listwarns")) { // Check if the message content starts with ".listwarns"
         if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) { // Check if the member has the ManageMessages permission
-            message.reply("You do not have permission to list warns."); // Reply with a permission error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("You do not have permission to list warns."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 List warns command attempted without permission by user", message.author.tag); // Log the permission error
             return; // Exit the command
         }
-
+    
         const member = message.mentions.members.first(); // Get the first mentioned member
         if (!member) { // Check if a valid member was mentioned
-            message.reply("Please mention a valid member to list warns."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Please mention a valid member to list warns."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 List warns command attempted without mentioning a user by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         const warns = fs.readFileSync(warnsFile, 'utf-8').split('\n').filter(Boolean); // Read the warns file and split it into lines, filtering out empty lines
         const memberWarns = warns.filter(warn => warn.startsWith(`${member.id},`)); // Filter the warnings for the specified member
         if (memberWarns.length === 0) { // Check if the member has no warnings
-            message.reply(`${member.user.tag} has no warnings.`); // Reply with a success message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xffd5f6) // Set the embed color to pink
+                .setDescription(`${member.user.tag} has no warnings.`); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🟢 Executed command .listwarns on user", member.user.tag, "by", message.author.tag); // Log the command execution
             return; // Exit the command
         }
-
+    
         const warnList = memberWarns.map((warn, index) => { // Map the member's warnings to a list
             const [id, tag, reason] = warn.split(','); // Split the warning entry into components
             return `${index + 1}. Reason: ${reason}`; // Return the formatted warning entry
         }).join('\n'); // Join the list into a single string
-        message.reply(`Warnings for ${member.user.tag}:\n${warnList}`); // Reply with the list of warnings
+        const embed = new EmbedBuilder() // Create a new embed
+            .setColor(0xffd5f6) // Set the embed color to pink
+            .setDescription(`Warnings for ${member.user.tag}:\n${warnList}`); // Set the embed description
+        message.reply({ embeds: [embed] }); // Reply with the embed
         console.log("🟢 Executed command .listwarns on user", member.user.tag, "by", message.author.tag); // Log the command execution
     }
-
+    
     if (message.content.startsWith(".delwarn")) { // Check if the message content starts with ".delwarn"
         if (!message.member.permissions.has(PermissionsBitField.Flags.ManageMessages)) { // Check if the member has the ManageMessages permission
-            message.reply("You do not have permission to delete warnings."); // Reply with a permission error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("You do not have permission to delete warnings."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Delete warn command attempted without permission by user", message.author.tag); // Log the permission error
             return; // Exit the command
         }
-
+    
         const args = message.content.split(' '); // Split the message content into arguments
         const member = message.mentions.members.first(); // Get the first mentioned member
         const warnIndex = parseInt(args[2], 10) - 1; // Parse the warning index from the arguments and adjust for zero-based index
-
+    
         if (!member) { // Check if a valid member was mentioned
-            message.reply("Please mention a valid member to delete a warning."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Please mention a valid member to delete a warning."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Delete warn command attempted without mentioning a user by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         if (isNaN(warnIndex) || warnIndex < 0) { // Check if the warning index is valid
-            message.reply("Please provide a valid warning index."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Please provide a valid warning index."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Delete warn command attempted with invalid index by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         const warns = fs.readFileSync(warnsFile, 'utf-8').split('\n').filter(Boolean); // Read the warns file and split it into lines, filtering out empty lines
         const memberWarns = warns.filter(warn => warn.startsWith(`${member.id},`)); // Filter the warnings for the specified member
-
+    
         if (warnIndex >= memberWarns.length) { // Check if the warning index is out of range
-            message.reply("Invalid warning index."); // Reply with an error message
+            const embed = new EmbedBuilder() // Create a new embed
+                .setColor(0xff0000) // Set the embed color to red for error
+                .setDescription("Invalid warning index."); // Set the embed description
+            message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Delete warn command attempted with out-of-range index by", message.author.tag); // Log the error
             return; // Exit the command
         }
-
+    
         memberWarns.splice(warnIndex, 1); // Remove the specified warning from the member's warnings
         const updatedWarns = warns.filter(warn => !warn.startsWith(`${member.id},`)).concat(memberWarns); // Update the warns list by removing the member's warnings and adding the updated warnings
         fs.writeFileSync(warnsFile, updatedWarns.join('\n') + '\n'); // Write the updated warns list back to the file
-        message.reply(`Warning ${warnIndex + 1} for ${member.user.tag} has been deleted.`); // Reply with a success message
+        const embed = new EmbedBuilder() // Create a new embed
+            .setColor(0xffd5f6) // Set the embed color to pink
+            .setDescription(`Warning ${warnIndex + 1} for ${member.user.tag} has been deleted.`); // Set the embed description
+        message.reply({ embeds: [embed] }); // Reply with the embed
         console.log("🟢 Executed command .delwarn on user", member.user.tag, "by", message.author.tag); // Log the command execution
     }
 });
