@@ -1,6 +1,7 @@
 require('dotenv').config(); // Load environment variables from a .env file
 const { Client, GatewayIntentBits, ActivityType, PermissionsBitField, EmbedBuilder } = require('discord.js'); // Import necessary classes from discord.js
 const fs = require('fs'); // Import the file system module
+const { measureMemory } = require('vm');
 
 const client = new Client({ // Create a new instance of the Client class
     intents: [
@@ -39,6 +40,12 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
 
     if (message.author.bot) { // Check if the message author is a bot
         return; // If the author is a bot, return
+    }
+
+    if (message.content === "kys") { //Listens for suicidal people
+        message.reply("Keep yourself safe :heart:"); //tells them not to kill themselves
+        console.log("Command executed kys"); //logs that fact that the preson is retarded
+        console.log("By user: ", message.author.tag); //specifies the person.
     }
     
     if (message.content === ".help") { // Check if the message content is ".help"
