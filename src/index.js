@@ -352,3 +352,4 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
 
 //ok
+//ok
