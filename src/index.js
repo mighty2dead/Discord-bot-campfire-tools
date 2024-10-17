@@ -110,7 +110,7 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
             message.reply({ embeds: [embed] }); // Reply with the embed
             console.log("🔴 Ban command attempted without mentioning a user by", message.author.tag); // Log the error
             return; // Exit the command
-        }
+        }   
 
         if (!member.bannable) { // Check if the member is bannable
             const embed = new EmbedBuilder() // Create a new embed
@@ -351,5 +351,3 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
 
-//ok
-//ok
