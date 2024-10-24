@@ -49,6 +49,22 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
         console.log("Command executed kys"); //logs that fact that the preson is retarded
         console.log("By user: ", message.author.tag); //specifies the person.
     }
+
+    if (message.content === ".credits") {
+        const creditsEmbed = new EmbedBuilder()
+            .setColor(0xffd5f6)
+            .setTitle('Bot Credits')
+            .setDescription('These are the makes behind the Aerisu tools bot:')
+            .addFields(
+                {name: 'Chloe!', value: 'Founder/active developer of the bot'},
+                {name: 'Bez', value: 'Helping with any complications'},
+                {name: "Chloe's MacBook", value: 'Running this hot mess of code'}
+            )
+            .setFooter({ text: 'This was made mid class and i didnt put a lot of work into it. \nYours, Chloe.'})
+        message.reply({ embeds: [creditsEmbed]});
+        console.log("🟢 Executed command .credits")
+        console.log("🔵 By user", message.author.tag)
+    }
     
     if (message.content === ".help") { // Check if the message content is ".help"
         const helpEmbed = new EmbedBuilder() // Create a new embed
