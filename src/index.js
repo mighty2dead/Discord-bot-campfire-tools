@@ -2,8 +2,9 @@ require('dotenv').config(); // Load environment variables from a .env file
 const { Client, GatewayIntentBits, ActivityType, PermissionsBitField, EmbedBuilder } = require('discord.js'); // Import necessary classes from discord.js
 const fs = require('fs'); // Import the file system module
 const { measureMemory } = require('vm');
-const warnHandler = require('./warn_handler'); // Import the warn handler module
-const banHandler = require('./srs/commands/ban-handler'); // Import the ban handler module
+const warnHandler = require('./srs/warn_handler.js'); // Import the warn handler module
+const banHandler = require('./srs/ban-handler.js'); // Import the ban handler module
+
 
 const client = new Client({ // Create a new instance of the Client class
     intents: [
@@ -17,10 +18,12 @@ const logChannelId = process.env.CHANNELID; // Get the log channel ID from envir
 let lastBannedMemberId = null; // Variable to store the last banned member's ID
 const warnsFile = 'logs.txt'; // File to store warnings
 
+
 // Ensure the warns file exists
 if (!fs.existsSync(warnsFile)) { // Check if the warns file does not exist
     fs.writeFileSync(warnsFile, ''); // Create an empty warns file
 }
+
 
 client.on("ready", (c) => { // Listen for the ready event
     console.log(`🟢 Logged in as ${client.user.tag}`); // Log the bot's tag
@@ -30,6 +33,7 @@ client.on("ready", (c) => { // Listen for the ready event
         type: ActivityType.Listening, // Activity type
     });
 });
+
 
 client.on("messageCreate", async (message) => { // Listen for the messageCreate event
     const logMessage = (log) => { // Function to log messages
