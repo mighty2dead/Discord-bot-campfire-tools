@@ -1,5 +1,5 @@
-const { warn } = require('../index');
-const { unwarn, listwarn, delwarn } = require('../index');
+const { warn } = require('./index');
+const { unwarn, listwarn, delwarn } = require('./index');
 
 module.exports = {
     name: 'warn',
@@ -109,4 +109,11 @@ module.exports.delwarn = {
                 message.reply('There was an error trying to delete the warning.');
             });
     },
+};
+
+// warn_handler.js
+module.exports = {
+    warn: function(message) {
+        console.warn(message);
+    }
 };

@@ -62,8 +62,8 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
             )
             .setFooter({ text: 'This was made mid class and i didnt put a lot of work into it. \nYours, Chloe.'})
         message.reply({ embeds: [creditsEmbed]});
-        console.log("🟢 Executed command .credits")
-        console.log("🔵 By user", message.author.tag)
+        console.log("🟢 Executed command .credits");
+        console.log("🔵 By user", message.author.tag);
     }
     
     if (message.content === ".help") { // Check if the message content is ".help"
