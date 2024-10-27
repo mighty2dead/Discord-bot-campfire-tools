@@ -2,3 +2,5 @@
 node_modules
 logs.txt
 command_logs.txt
+database.txt
+.DS_Store
