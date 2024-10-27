@@ -2,8 +2,7 @@ require('dotenv').config(); // Load environment variables from a .env file
 const { Client, GatewayIntentBits, ActivityType, PermissionsBitField, EmbedBuilder } = require('discord.js'); // Import necessary classes from discord.js
 const fs = require('fs'); // Import the file system module
 const { measureMemory } = require('vm');
-const warnHandler = require('./srs/warn_handler.js'); // Import the warn handler module
-const banHandler = require('./srs/ban-handler.js'); // Import the ban handler module
+
 
 
 const client = new Client({ // Create a new instance of the Client class
@@ -15,14 +14,6 @@ const client = new Client({ // Create a new instance of the Client class
 });
 
 const logChannelId = process.env.CHANNELID; // Get the log channel ID from environment variables
-let lastBannedMemberId = null; // Variable to store the last banned member's ID
-const warnsFile = 'logs.txt'; // File to store warnings
-
-
-// Ensure the warns file exists
-if (!fs.existsSync(warnsFile)) { // Check if the warns file does not exist
-    fs.writeFileSync(warnsFile, ''); // Create an empty warns file
-}
 
 
 client.on("ready", (c) => { // Listen for the ready event
@@ -48,91 +39,55 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
         return; // If the author is a bot, return
     }
 
-    if (message.content === "kys") { //Listens for suicidal people
-        message.reply("Keep yourself safe :heart:"); //tells them not to kill themselves
-        console.log("Command executed kys"); //logs that fact that the preson is retarded
-        console.log("By user: ", message.author.tag); //specifies the person.
-    }
-
-    if (message.content === ".credits") {
-        const creditsEmbed = new EmbedBuilder()
-            .setColor(0xffd5f6)
-            .setTitle('Bot Credits')
-            .setDescription('These are the makes behind the Aerisu tools bot:')
-            .addFields(
-                {name: 'Chloe!', value: 'Founder/active developer of the bot'},
-                {name: 'Bez', value: 'Helping with any complications'},
-                {name: "Chloe's MacBook", value: 'Running this hot mess of code'}
-            )
-            .setFooter({ text: 'This was made mid class and i didnt put a lot of work into it. \nYours, Chloe.'})
-        message.reply({ embeds: [creditsEmbed]});
-        console.log("🟢 Executed command .credits");
-        console.log("🔵 By user", message.author.tag);
-    }
-    
-    if (message.content === ".help") { // Check if the message content is ".help"
-        const helpEmbed = new EmbedBuilder() // Create a new embed
-            .setColor(0xffd5f6) // Set the embed color
-            .setTitle('Bot Commands') // Set the embed title
-            .setDescription('Here are the available commands and how to use them:') // Set the embed description
-            .addFields( // Add fields to the embed
-                { name: '.ping', value: 'Replies with "Pong!".\n**Example:** `.ping`' }, // Add the .ping command
-                { name: '.help', value: 'Displays this help message.\n**Example:** `.help`' }, // Add the .help command
-                { name: '.hey', value: 'Replies with "Hello there!".\n**Example:** `.hey`' }, // Add the .hey command
-                { name: '.ban', value: 'Bans a mentioned member.\n**Example:** `.ban @user [duration in seconds]`' }, // Add the .ban command
-                { name: '.unban', value: 'Unbans a user by ID.\n**Example:** `.unban user_id`' }, // Add the .unban command
-                { name: '.warn', value: 'Warns a mentioned member.\n**Example:** `.warn @user [reason]`' }, // Add the .warn command
-                { name: '.unwarn', value: 'Removes all warnings for a mentioned member.\n**Example:** `.unwarn @user`' }, // Add the .unwarn command
-                { name: '.listwarns', value: 'Lists all warnings for a mentioned member.\n**Example:** `.listwarns @user`' }, // Add the .listwarns command
-                { name: '.delwarn', value: 'Deletes a specific warning for a mentioned member by index.\n**Example:** `.delwarn @user [index]`' } // Add the .delwarn command
-            )
-            .setFooter({ text: 'Use these commands responsibly!' }); // Set the embed footer
-
-        message.reply({ embeds: [helpEmbed] }); // Reply with the help embed
-        console.log("🟢 Executed command .help"); // Log the command execution
-        console.log("🔵 By user", message.author.tag); // Log the user who executed the command
-    }
-
-    if (message.content === ".hey") { // Check if the message content is ".hey"
-        const startTime = Date.now(); // Get the current timestamp
+    if (message.content === '=ping') { // Check if the message content is .ping
+        const sent = await message.channel.send({ embeds: [new EmbedBuilder().setDescription('Pinging...')] }); // Send an embed message to the channel
+        const timeDiff = sent.createdTimestamp - message.createdTimestamp; // Calculate the time difference
         const embed = new EmbedBuilder() // Create a new embed
-            .setColor(0xffd5f6) // Set the embed color
-            .setDescription("Hello there!"); // Set the embed description
+            .setColor(0x505050) // Set the embed color
+            .setTitle('Zephyr status:') // Set the embed title
+            .setDescription(`<:action_green:1300069365567459430>  The bot is online! \n \n<:w_yell:1300080206345801809>  Latency is ${timeDiff}ms.`) // Set the embed description
+            .setTimestamp() // Set the embed timestamp
+            .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() }); // Set the embed footer
 
-        const reply = await message.reply({ embeds: [embed] }); // Reply with the embed
-        const endTime = Date.now(); // Get the current timestamp
-        const responseTime = endTime - startTime; // Calculate the response time
-
-        const updatedEmbed = new EmbedBuilder() // Create a new embed
-            .setColor(0xffd5f6) // Set the embed color
-            .setDescription(`Hello there! (Response time: ${responseTime} ms)`); // Set the embed description with the response time
-        
-        await reply.edit({ embeds: [updatedEmbed] }); // Edit the reply with the updated embed
-        logMessage(`🟢 Executed command .hey by ${message.author.tag} with response time ${responseTime} ms`); // Log the command execution with the response time
+        await sent.edit({ embeds: [embed] }); // Edit the message to include the embed
+        logMessage(`Ping command used by ${message.author.tag} - Latency: ${timeDiff}ms`); // Log the command usage
     }
 
-    if (message.content.startsWith(".ban")) { // Check if the message content starts with ".ban"
-        banHandler.handleBanCommand(message); // Call the handleBanCommand function from the ban handler module
-    }
+    if (message.content.startsWith('=test')) {
+        const args = message.content.split(' ').slice(1); // Get the arguments
+        let response = [];
 
-    if (message.content.startsWith(".unban")) { // Check if the message content starts with ".unban"
-        banHandler.handleUnbanCommand(message); // Call the handleUnbanCommand function from the ban handler module
-    }
+        if (args.includes('/t')) {
+            response.push("yes");
+        }
+        if (args.includes('/e')) {
+            response.push("no");
+        }
+        if (args.includes('/f')) {
+            response.push("maybe");
+        }
+
+        if (response.length === 0) {
+            const invalidEmbed = new EmbedBuilder()
+                .setColor(0x505050) // Red color for error
+                .setTitle('<:mod_red:1300068904021786736>  Invalid Command')
+                .setDescription('The arguments provided are invalid. Please use one of the following arguments: /t, /e, /f.')
+                .setTimestamp()
+                .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
+
+            await message.channel.send({ embeds: [invalidEmbed] });
+        } else {
+            const embed = new EmbedBuilder()
+                .setColor(0x505050)
+                .setTitle('<:mod_green:1300069043914670082>  Test Command Successful')
+                .setDescription(response.join(', '))
+                .setTimestamp()
+                .setFooter({ text: `Requested by ${message.author.tag}`, iconURL: message.author.displayAvatarURL() });
+
+            await message.channel.send({ embeds: [embed] });
+        }
+    }   
     
-    if (message.content.startsWith(".warn")) { // Check if the message content starts with ".warn"
-        if (message.content.startsWith(".listwarns")) { // Check if the message content starts with ".listwarns"
-            warnHandler.handleListWarnsCommand(message); // Call the handleListWarnsCommand function from the warn handler module
-        }
-
-        if (message.content.startsWith(".unwarn")) { // Check if the message content starts with ".unwarn"
-            warnHandler.handleUnwarnCommand(message); // Call the handleUnwarnCommand function from the warn handler module
-        }
-
-        if (message.content.startsWith(".delwarn")) { // Check if the message content starts with ".delwarn"
-            warnHandler.handleDelWarnCommand(message); // Call the handleDelWarnCommand function from the warn handler module
-        }
-        warnHandler.handleWarnCommand(message); // Call the handleWarnCommand function from the warn handler module
-    }
 });
 
 client.login(process.env.TOKEN); // Log in to the Discord API with the bot's token
