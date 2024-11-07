@@ -38,6 +38,18 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
     if (message.author.bot) { // Check if the message author is a bot
         return; // If the author is a bot, return
     }
+    
+    if (message.content === '=supersecretcommand') {
+    const sent = await message.channel.send({embeds: [new EmbedBuilder().setDescription('Tagging along to what the owners are cooking...')]});
+    const timeDiff = sent.createdTimestamp - message.createdTimestamp;
+    const embed = new EmbedBuilder()
+            .setColor(0x505050)
+            .setTitle('You found it!')
+            .setDescription('You found the sevret command! Ask for a role and you might get it...')
+            .setFooter({ text: 'Found by ${message.authot.tag}'});
+
+        await send.edit({ embeds: [embed] })
+  }
 
     if (message.content === '=ping') { // Check if the message content is .ping
         const sent = await message.channel.send({ embeds: [new EmbedBuilder().setDescription('Pinging...')] }); // Send an embed message to the channel
