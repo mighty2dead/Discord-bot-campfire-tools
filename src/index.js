@@ -49,7 +49,10 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
             .setFooter({ text: 'Found by ${message.authot.tag}'});
 
         await send.edit({ embeds: [embed] })
+        console.log(`Secret command used by ${message.author.tag} - Latency: ${timeDiff}ms`);    
   }
+
+// There will come a time when all of us are dead.
 
     if (message.content === '=ping') { // Check if the message content is .ping
         const sent = await message.channel.send({ embeds: [new EmbedBuilder().setDescription('Pinging...')] }); // Send an embed message to the channel
@@ -133,7 +136,8 @@ client.on("messageCreate", async (message) => { // Listen for the messageCreate 
             } else if (option === '/h') {
                 hackban = true;
             }
-        });
+        }); 
+
 
         const user = hackban ? { id: userId } : message.mentions.members.first() || message.guild.members.cache.get(userId);
 
